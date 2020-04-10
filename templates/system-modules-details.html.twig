@@ -58,6 +58,9 @@
                 {% if module.required_by %}
                   <div class="admin-requirements required-by">{{ 'Required by: @module-list'|t({'@module-list': module.required_by }) }}</div>
                 {% endif %}
+                {% if module.path %}
+                  <div class="admin-requirements module-path">{{ 'Module path: @module-list'|t({'@module-list': module.path }) }}</div>
+                {% endif %}
               </div>
               {% if module.links %}
                 <div class="links">
