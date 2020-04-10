@@ -1,4 +1,4 @@
-name: Module filter
+name: Module Filter
 type: module
 description: Filter the modules list.
 package: Administration
