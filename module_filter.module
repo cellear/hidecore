@@ -71,7 +71,7 @@ function module_filter_form_system_modules_alter(&$form, FormStateInterface $for
 
   // Remove recent items older than a week.
   $recent = array_filter($recent, function ($val) {
-    return !($val < REQUEST_TIME - 60 * 60 * 24 * 7);
+    return !($val < \Drupal::time()->getRequestTime() - 60 * 60 * 24 * 7);
   });
   $state->set('module_filter.recent', $recent);
 
@@ -200,7 +200,7 @@ function module_filter_system_modules_recent_enabled_submit($form, FormStateInte
   foreach (Element::children($form['modules']) as $package) {
     foreach ($modules as $module => $details) {
       if (isset($form['modules'][$package][$module]) && $form['modules'][$package][$module]['enable']['#default_value'] != $details['enable']) {
-        $recent[$module] = REQUEST_TIME;
+        $recent[$module] = \Drupal::time()->getRequestTime();
       }
     }
   }

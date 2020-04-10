@@ -5,3 +5,6 @@ package: Administration
 core: 8.x
 
 configure: module_filter.settings
+
+dependencies:
+  - drupal:system (>= 8.3)
