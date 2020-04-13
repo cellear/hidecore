@@ -89,7 +89,7 @@ function module_filter_form_system_modules_alter(&$form, FormStateInterface $for
     }
   }
 
-  $modules = system_rebuild_module_data();
+  $modules = \Drupal::service('extension.list.module')->reset()->getList();
 
   foreach ($modules as $name => $module) {
     if ($name == 'module_filter') {
@@ -203,7 +203,7 @@ function module_filter_system_modules_recent_enabled_submit($form, FormStateInte
   // the version of Drupal and building the $modules array accordingly.
   // @see https://www.drupal.org/node/2851653
   $modules = [];
-  if (version_compare(\DRUPAL::VERSION, '8.3.0', '<')) {
+  if (version_compare(\Drupal::VERSION, '8.3.0', '<')) {
     foreach ($form_state->getValue('modules') as $package) {
       $modules += $package;
     }
