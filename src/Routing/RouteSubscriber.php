@@ -1,6 +1,6 @@
 <?php
 
-namespace Drupal\module_filter\Routing;
+namespace Drupal\hidecore\Routing;
 
 use Drupal\Core\Routing\RouteSubscriberBase;
 use Symfony\Component\Routing\RouteCollection;
@@ -15,7 +15,7 @@ class RouteSubscriber extends RouteSubscriberBase {
    */
   public function alterRoutes(RouteCollection $collection) {
     if ($route = $collection->get('update.status')) {
-      $route->setDefault('_controller', 'Drupal\module_filter\Controller\ModuleFilterUpdateController::updateStatus');
+      $route->setDefault('_controller', 'Drupal\hidecore\Controller\ModuleFilterUpdateController::updateStatus');
     }
   }
 

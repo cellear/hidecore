@@ -1,0 +1,3 @@
+administer hidecore:
+  title: 'Administer Hidecore'
+  description: 'Configure how Hidecore performs.'

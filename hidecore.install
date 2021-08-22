@@ -1,0 +1,22 @@
+<?php
+
+/**
+ * @file
+ * Install, update and uninstall functions for the hidecore module.
+ */
+
+/**
+ * Implements hook_install().
+ */
+function hidecore_install() {
+  $state = \Drupal::state();
+  $state->set('hidecore.recent', ['hidecore' => \Drupal::time()->getRequestTime()]);
+}
+
+/**
+ * Implements hook_uninstall().
+ */
+function hidecore_uninstall() {
+  $state = \Drupal::state();
+  $state->delete('hidecore.recent');
+}

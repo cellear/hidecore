@@ -1,6 +1,6 @@
 <?php
 
-namespace Drupal\module_filter\Controller;
+namespace Drupal\hidecore\Controller;
 
 use Drupal\update\Controller\UpdateController;
 
@@ -19,7 +19,7 @@ class ModuleFilterUpdateController extends UpdateController {
         'id' => 'update-status',
       ],
     ];
-    $build['module_filter'] = $this->formBuilder()->getForm('Drupal\module_filter\Form\ModuleFilterUpdateStatusForm');
+    $build['hidecore'] = $this->formBuilder()->getForm('Drupal\hidecore\Form\ModuleFilterUpdateStatusForm');
     $build['update_report'] = parent::updateStatus();
     return $build;
   }

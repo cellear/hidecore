@@ -1,6 +1,6 @@
 <?php
 
-namespace Drupal\module_filter\Form;
+namespace Drupal\hidecore\Form;
 
 use Drupal\Core\Form\FormBase;
 use Drupal\Core\Form\FormStateInterface;
@@ -14,7 +14,7 @@ class ModuleFilterUpdateStatusForm extends FormBase {
    * {@inheritdoc}
    */
   public function getFormId() {
-    return 'module_filter_update_status_form';
+    return 'hidecore_update_status_form';
   }
 
   /**
@@ -41,7 +41,7 @@ class ModuleFilterUpdateStatusForm extends FormBase {
       ],
       '#attached' => [
         'library' => [
-          'module_filter/update.status',
+          'hidecore/update.status',
         ],
       ],
     ];

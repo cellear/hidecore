@@ -17,7 +17,7 @@
           // Note that we first open all <details> to be able to use ':visible'.
           // Mark the <details> elements that were closed before filtering, so
           // they can be reclosed when filtering is removed.
-          $details.show().not('[open]').attr('data-module_filter-state', 'forced-open');
+          $details.show().not('[open]').attr('data-hidecore-state', 'forced-open');
         });
         ModuleFilter.input.bind('winnow:finish', function() {
           // Hide the package <details> if they don't have any visible rows.
@@ -30,8 +30,8 @@
 
           // Return <details> elements that had been closed before filtering
           // to a closed state.
-          $details.filter('[data-module_filter-state="forced-open"]')
-            .removeAttr('data-module_filter-state')
+          $details.filter('[data-hidecore-state="forced-open"]')
+            .removeAttr('data-hidecore-state')
             .attr('open', false);
         });
       }
