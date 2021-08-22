@@ -46,15 +46,15 @@ Configuration
 
 To enable and configure this module do the following:
 
-1. Go to Admin -> Modules, and enable Module Filter.
+1. Go to Admin -> Modules, and enable Hidecore.
 
-2. Go to Admin -> Configuration -> User interface -> Module filter, and make
+2. Go to Admin -> Configuration -> User interface -> Hidecore, and make
    any necessary configuration changes.
 
 Tabs
 ----
 
-By default Module Filter alters the modules page into tabs (Can be disabled on
+By default Hidecore alters the modules page into tabs (Can be disabled on
 configuration page). In the tabs view, each package is converted to a vertical
 tab rather than a fieldset which greatly increases the ability to browse them.
 

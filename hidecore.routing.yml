@@ -2,6 +2,6 @@ hidecore.settings:
   path: '/admin/config/user-interface/module-filter'
   defaults:
     _form: '\Drupal\hidecore\Form\ModuleFilterSettingsForm'
-    _title: 'Module filter settings'
+    _title: 'Hidecore settings'
   requirements:
     _permission: 'administer hidecore'

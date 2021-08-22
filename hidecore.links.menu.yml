@@ -1,6 +1,6 @@
 hidecore.config_admin_menu_item:
-  title: 'Module filter'
-  description: 'Settings for the Module Filter module.'
+  title: 'Hidecore'
+  description: 'Settings for the Hidecore module.'
   menu_name: admin
   parent: system.admin_config_ui
   route_name: hidecore.settings
