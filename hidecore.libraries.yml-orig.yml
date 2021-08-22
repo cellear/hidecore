@@ -37,7 +37,6 @@ modules.tabs:
     theme:
       css/hidecore.modules_tabs.css: {}
   dependencies:
-    - core/drupalSettings
     - hidecore/modules
 modules.uninstall:
   version: VERSION

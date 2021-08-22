@@ -28,7 +28,7 @@
 .modules-tabs__menu-item:first-child {
   border-top: 0 none;
 }
-.modules-tabs__menu-item.tab-separator {
+.modules-tabs__menu-item.tab__new {
   margin-bottom: 10px;
   border-bottom: 1px solid #ccc;
 }

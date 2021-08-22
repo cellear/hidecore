@@ -91,90 +91,19 @@ function hidecore_form_system_modules_alter(&$form, FormStateInterface $form_sta
 
   $modules = \Drupal::service('extension.list.module')->reset()->getList();
 
-  $global_tabs = [
-    'recent' => TRUE,
-    'new' => TRUE,
-  ];
   foreach ($modules as $name => $module) {
-    $classes = [];
     if ($name == 'hidecore') {
       $ctime = filectime($module->getPathname());
       if (($ctime - strtotime('-1 week')) > 0) {
         foreach (Element::children($form['modules']) as $package) {
           if (isset($form['modules'][$package][$name])) {
             $form['modules'][$package][$name]['#attributes']['class'][] = 'new';
-            $classes[] = 'new';
             break;
           }
         }
       }
     }
-
-    if ($module->origin === 'core') {
-      $profile = \Drupal::installProfile();
-      if (strpos($module->subpath, 'profiles/' . $profile . '/modules/') === 0) {
-        $classes[] = 'profile';
-        $global_tabs['profile'] = TRUE;
-      }
-      else {
-        $classes[] = 'core';
-        $global_tabs['core'] = TRUE;
-      }
-    }
-    elseif (strpos($module->subpath, 'modules/contrib/') === 0) {
-      $classes[] = 'contrib';
-      $global_tabs['contrib'] = TRUE;
-    }
-    elseif (strpos($module->subpath, 'modules/custom/') === 0) {
-      $classes[] = 'custom';
-      $global_tabs['custom'] = TRUE;
-    }
-
-    if (!empty($classes)) {
-      foreach (Element::children($form['modules']) as $package) {
-        if (isset($form['modules'][$package][$name])) {
-          // Ensure if there is an array before merge.
-          if (!isset($form['modules'][$package][$name]['#attributes']['class'])) {
-            $form['modules'][$package][$name]['#attributes']['class'] = [];
-          }
-
-          $form['modules'][$package][$name]['#attributes']['class'] = array_merge(
-            $form['modules'][$package][$name]['#attributes']['class'],
-            $classes
-          );
-          break;
-        }
-      }
-    }
   }
-
-  // Structure the $global_tabs array to include the tabs label.
-  $global_tabs = array_keys(array_filter($global_tabs));
-  $global_tabs = array_combine($global_tabs, $global_tabs);
-  $global_tabs = array_map(function ($value) {
-    switch ($value) {
-      case 'recent':
-        return t('Recently enabled');
-
-      case 'new':
-        return t('Newly available');
-
-      case 'core':
-        return t('Core');
-
-      case 'profile':
-        return t('Active profile');
-
-      case 'contrib':
-        return t('Contrib modules');
-
-      case 'custom':
-        return t('Custom modules');
-    }
-
-    return '';
-  }, $global_tabs);
-  $form['#attached']['drupalSettings']['moduleFilter']['globalTabs'] = array_filter($global_tabs);
 
   $form['#submit'][] = 'hidecore_system_modules_recent_enabled_submit';
   $form['#submit'][] = 'hidecore_system_modules_redirect_submit';

@@ -1,50 +1,25 @@
-(function($, settings) {
+(function($) {
 
   // 'use strict';
 
   Drupal.ModuleFilter = Drupal.ModuleFilter || {};
   var ModuleFilter = Drupal.ModuleFilter;
 
-  var globalTabNames = function() {
-    var globalTabs = [];
-
-    if (settings.moduleFilter && settings.moduleFilter.globalTabs) {
-      for (var i in settings.moduleFilter.globalTabs) {
-        if (settings.moduleFilter.globalTabs.hasOwnProperty(i)) {
-          globalTabs.push(i);
-        }
-      }
-    }
-
-    return globalTabs;
-  }
-
   var Tabs = function(tabs, $pane) {
     var $tabs = $('<ul class="modules-tabs__menu"></ul>');
 
-    // Add global tabs.
-    var globalTabs = {
-      "all": new Tab(Drupal.t('All modules'), 'all')
-    };
-    if (settings.moduleFilter && settings.moduleFilter.globalTabs) {
-      var count = Object.keys(settings.moduleFilter.globalTabs).length;
-      var num = 0;
-      for (var i in settings.moduleFilter.globalTabs) {
-        num++;
-        if (settings.moduleFilter.globalTabs.hasOwnProperty(i)) {
-          globalTabs[i] = new Tab(settings.moduleFilter.globalTabs[i], i, i === 'new' || num === count);
-        }
-      }
-    }
-
-    var $rows = $(ModuleFilter.selector, ModuleFilter.wrapper);
-
-    tabs = $.extend(globalTabs, tabs);
+    // Add our three special tabs.
+    var all = new Tab(Drupal.t('All modules'), 'all');
+    var recentModules = new Tab(Drupal.t('Recently enabled'), 'recent');
+    var newModules = new Tab(Drupal.t('Newly available'), 'new');
+    tabs = $.extend({
+      "all": all,
+      "recent": recentModules,
+      "new": newModules
+    }, tabs);
 
     for (var i in tabs) {
-      if (tabs.hasOwnProperty(i)) {
-        $tabs.append(tabs[i].element);
-      }
+      $tabs.append(tabs[i].element);
     }
 
     $pane.wrap('<div class="modules-tabs clearfix"></div>');
@@ -56,6 +31,8 @@
     this.activeTab = null;
 
     // Handle "recent" and "new" tabs when they contain no items.
+    // Todo: move this somewhere else.
+    var $rows = $(ModuleFilter.selector, ModuleFilter.wrapper);
     if (!$rows.filter('.recent').length) {
       var recentModules = this.tabs['recent'];
       if (recentModules) {
@@ -91,14 +68,15 @@
           break;
 
         case 'recent':
+          var $recent = $elements.filter('.recent').find('td.checkbox :checkbox');
+          enabled = $recent.filter(':checked').length;
+          total = $recent.length;
+          break;
+
         case 'new':
-        case 'core':
-        case 'profile':
-        case 'contrib':
-        case 'custom':
-          var $modules = $elements.filter('.' + i).find('td.checkbox :checkbox');
-          enabled = $modules.filter(':checked').length;
-          total = $modules.length;
+          var $new = $elements.filter('.new').find('td.checkbox :checkbox');
+          enabled = $new.filter(':checked').length;
+          total = $new.length;
           break;
 
         default:
@@ -147,19 +125,17 @@
   };
 
   Tabs.prototype.showResults = function() {
-    var staticTabs = globalTabNames();
+    var staticTabs = [ 'all', 'recent', 'new' ];
 
     for (var i in this.tabs) {
-      if (this.tabs.hasOwnProperty(i)) {
-        var count = this.tabs[i].results.length;
+      var count = this.tabs[i].results.length;
 
-        if (count > 0 || i === this.activeTab.packageId || staticTabs.indexOf(i) >= 0) {
-          this.tabs[i].showResults();
-          this.tabs[i].element.show();
-        }
-        else {
-          this.tabs[i].element.hide();
-        }
+      if (count > 0 || i == this.activeTab.packageId || staticTabs.indexOf(i) >= 0) {
+        this.tabs[i].showResults();
+        this.tabs[i].element.show();
+      }
+      else {
+        this.tabs[i].element.hide();
       }
     }
   };
@@ -171,10 +147,10 @@
     }
   };
 
-  var Tab = function(name, packageId, addSeparator) {
+  var Tab = function(name, packageId) {
     this.name = name;
     this.packageId = packageId;
-    this.element = $('<li class="modules-tabs__menu-item tab__' + this.packageId + (addSeparator ? ' tab-separator' : '') + '"></li>');
+    this.element = $('<li class="modules-tabs__menu-item tab__' + this.packageId + '"></li>');
     this.results = [];
     this.link = $('<a href="#' + this.packageId + '"><strong>' + this.name + '</strong></a>');
     this.element.append(this.link);
@@ -439,29 +415,39 @@
           // items not visible in the active tab.
           var allTab = ModuleFilter.tabs.get('all');
           allTab.results.push(item);
-
-          var globalTabs = globalTabNames();
-          for (var i in globalTabs) {
-            if (item.element.hasClass(globalTabs[i])) {
-              var tab = ModuleFilter.tabs.get(globalTabs[i]);
-              if (tab) {
-                tab.results.push(item);
-              }
-            }
+          if (item.element.hasClass('recent')) {
+            var recentTab = ModuleFilter.tabs.get('recent');
+            recentTab.results.push(item);
           }
-
-          if (item.tab !== undefined && item.tab) {
+          if (item.element.hasClass('new')) {
+            var newTab = ModuleFilter.tabs.get('new');
+            newTab.results.push(item);
+          }
+          if (item.tab != undefined && item.tab) {
             item.tab.results.push(item);
           }
 
           // For tabs other than "all", evaluate whether the item should
           // be shown.
-          if (activeTab && activeTab.packageId !== 'all') {
-            if (item.element.hasClass(activeTab.packageId)) {
-              return true;
-            }
-            else if (item.element.hasClass('package__' + activeTab.packageId)) {
-              return true;
+          if (activeTab && activeTab.packageId != 'all') {
+            switch (activeTab.packageId) {
+              case 'recent':
+                if (item.element.hasClass('recent')) {
+                  return true;
+                }
+                break;
+
+              case 'new':
+                if (item.element.hasClass('new')) {
+                  return true;
+                }
+                break;
+
+              default:
+                if (item.element.hasClass('package__' + activeTab.packageId)) {
+                  return true;
+                }
+                break;
             }
 
             return false;
@@ -479,7 +465,7 @@
           ModuleFilter.tabs.resetResults();
         });
         ModuleFilter.winnow.bind('finish', function() {
-          if (ModuleFilter.input.val() !== '') {
+          if (ModuleFilter.input.val() != '') {
             ModuleFilter.tabs.showResults();
           }
           else {
@@ -492,4 +478,4 @@
     }
   };
 
-})(jQuery, drupalSettings);
+})(jQuery);
