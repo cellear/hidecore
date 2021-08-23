@@ -8,15 +8,15 @@ use Symfony\Component\Routing\RouteCollection;
 /**
  * Listens to the dynamic route events.
  */
-class RouteSubscriber extends RouteSubscriberBase {
-
-  /**
-   * {@inheritdoc}
-   */
-  public function alterRoutes(RouteCollection $collection) {
-    if ($route = $collection->get('update.status')) {
-      $route->setDefault('_controller', 'Drupal\hidecore\Controller\ModuleFilterUpdateController::updateStatus');
-    }
-  }
-
-}
+//class RouteSubscriber extends RouteSubscriberBase {
+//
+//  /**
+//   * {@inheritdoc}
+//   */
+//  public function alterRoutes(RouteCollection $collection) {
+//    if ($route = $collection->get('update.status')) {
+//      $route->setDefault('_controller', 'Drupal\hidecore\Controller\ModuleFilterUpdateController::updateStatus');
+//    }
+//  }
+//
+//}

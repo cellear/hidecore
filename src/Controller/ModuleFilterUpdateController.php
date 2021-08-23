@@ -12,16 +12,16 @@ class ModuleFilterUpdateController extends UpdateController {
   /**
    * {@inheritdoc}
    */
-  public function updateStatus() {
-    $build = [
-      '#type' => 'container',
-      '#attributes' => [
-        'id' => 'update-status',
-      ],
-    ];
-    $build['hidecore'] = $this->formBuilder()->getForm('Drupal\hidecore\Form\ModuleFilterUpdateStatusForm');
-    $build['update_report'] = parent::updateStatus();
-    return $build;
-  }
+//  public function updateStatus() {
+//    $build = [
+//      '#type' => 'container',
+//      '#attributes' => [
+//        'id' => 'update-status',
+//      ],
+//    ];
+//    $build['hidecore'] = $this->formBuilder()->getForm('Drupal\hidecore\Form\ModuleFilterUpdateStatusForm');
+//    $build['update_report'] = parent::updateStatus();
+//    return $build;
+//  }
 
 }
