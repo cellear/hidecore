@@ -33,7 +33,7 @@ function hidecore_form_system_modules_alter(&$form, FormStateInterface $form_sta
   $config = \Drupal::config('hidecore.settings');
 
   $key = array_search('system/drupal.system.modules', $form['#attached']['library']);
-  $form['#attached']['library'][] = $config->get('tabs') ? 'hidecore/modules.tabs' : 'hidecore/modules.bare';
+  $form['#attached']['library'][] = 'hidecore/hide-the-modules';
   unset($form['filters']['text']['#description']);
 //  $form['filters']['text']['#placeholder'] = t('Filter by name');
   if (!empty($_GET['filter'])) {

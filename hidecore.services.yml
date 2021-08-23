@@ -1,5 +1,0 @@
-services:
-#  hidecore.route_subscriber:
-#    class: Drupal\hidecore\Routing\RouteSubscriber
-#    tags:
-#      - { name: event_subscriber }
