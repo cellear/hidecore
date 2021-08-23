@@ -17,14 +17,11 @@ function hidecore_help($route_name, RouteMatchInterface $route_match) {
     case 'help.page.hidecore':
       $output = '';
       $output .= '<p>';
-      $output .= t('The modules list page can become quite big when dealing with a fairly large site or even just a dev site meant for testing new and various modules being considered.');
+      $output .= t('The modules list page can be confusing to new users, because it displays numerous modules that are included with Drupal, and that makes it hard to pick out the modules that have been selected or created specifically for the user\'s own site.');
       $output .= '</p>';
       $output .= '<p>';
-      $output .= t('What this module aims to accomplish is the ability to quickly find the module you are looking for without having to rely on the browsers search feature which more times than not shows you the module name in the -Required by- or -Depends on- sections of the various modules or even some other location on the page like a menu item.');
+      $output .= t('This module addresses that by simply hiding the modules that come with Drupal, allowing the user to quickly grasp the functionality that has been added.');
       $output .= '</p>';
-      $output .= '<p>';
-      $output .= t('See the <a href=":project_page">project page on Drupal.org</a> for more details.', [':project_page' => 'https://www.drupal.org/project/hidecore']);
-
       return $output;
   }
 }
@@ -36,9 +33,9 @@ function hidecore_form_system_modules_alter(&$form, FormStateInterface $form_sta
   $config = \Drupal::config('hidecore.settings');
 
   $key = array_search('system/drupal.system.modules', $form['#attached']['library']);
-  if ($key !== FALSE) {
-    unset($form['#attached']['library'][$key]);
-  }
+//  if ($key !== FALSE) {
+//    unset($form['#attached']['library'][$key]);
+//  }
   $form['#attached']['library'][] = $config->get('tabs') ? 'hidecore/modules.tabs' : 'hidecore/modules.bare';
   unset($form['filters']['text']['#description']);
   $form['filters']['text']['#placeholder'] = t('Filter by name');
@@ -46,48 +43,27 @@ function hidecore_form_system_modules_alter(&$form, FormStateInterface $form_sta
     $form['filters']['text']['#default_value'] = $_GET['filter'];
   }
 
-  $status_defaults = [
-    ((isset($_GET['enabled'])) ? $_GET['enabled'] : 1) ? 'enabled' : '',
-    ((isset($_GET['disabled'])) ? $_GET['disabled'] : 1) ? 'disabled' : '',
-    ((isset($_GET['unavailable'])) ? $_GET['unavailable'] : 1) ? 'unavailable' : '',
-  ];
-  $form['filters']['status'] = [
-    '#type' => 'container',
-    '#attributes' => [
-      'class' => [
-        'module-filter-status',
-      ],
-    ],
-    'checkboxes' => [
-      '#type' => 'checkboxes',
-      '#default_value' => array_filter($status_defaults),
-      '#options' => [
-        'enabled' => t('Enabled'),
-        'disabled' => t('Disabled'),
-        'unavailable' => t('Unavailable'),
-      ],
-    ],
-  ];
 
-  $state = \Drupal::state();
-  $recent = $state->get('hidecore.recent') ?: [];
 
-  // Remove recent items older than a week.
-  $recent = array_filter($recent, function ($val) {
-    return !($val < \Drupal::time()->getRequestTime() - 60 * 60 * 24 * 7);
-  });
-  $state->set('hidecore.recent', $recent);
+//  $state = \Drupal::state();
+//  $recent = $state->get('hidecore.recent') ?: [];
+//
+//  // Remove recent items older than a week.
+//  $recent = array_filter($recent, function ($val) {
+//    return !($val < \Drupal::time()->getRequestTime() - 60 * 60 * 24 * 7);
+//  });
+//  $state->set('hidecore.recent', $recent);
 
-  if (!empty($recent)) {
-    foreach ($recent as $module => $time) {
-      foreach (Element::children($form['modules']) as $package) {
-        if (isset($form['modules'][$package][$module])) {
-          $form['modules'][$package][$module]['#attributes']['class'][] = 'recent';
-          break;
-        }
-      }
-    }
-  }
+//  if (!empty($recent)) {
+//    foreach ($recent as $module => $time) {
+//      foreach (Element::children($form['modules']) as $package) {
+//        if (isset($form['modules'][$package][$module])) {
+//          $form['modules'][$package][$module]['#attributes']['class'][] = 'recent';
+//          break;
+//        }
+//      }
+//    }
+//  }
 
   $modules = \Drupal::service('extension.list.module')->reset()->getList();
 
@@ -98,47 +74,47 @@ function hidecore_form_system_modules_alter(&$form, FormStateInterface $form_sta
 
   foreach ($modules as $name => $module) {
     $classes = [];
-    if ($name == 'hidecore') {
-      $ctime = filectime($module->getPathname());
-      if (($ctime - strtotime('-1 week')) > 0) {
-        foreach (Element::children($form['modules']) as $package) {
-          if (isset($form['modules'][$package][$name])) {
-            $form['modules'][$package][$name]['#attributes']['class'][] = 'new';
-            $classes[] = 'new';
-            break;
-          }
-        }
-      }
-    }
+//    if ($name == 'hidecore') {
+//      $ctime = filectime($module->getPathname());
+//      if (($ctime - strtotime('-1 week')) > 0) {
+//        foreach (Element::children($form['modules']) as $package) {
+//          if (isset($form['modules'][$package][$name])) {
+//            $form['modules'][$package][$name]['#attributes']['class'][] = 'new';
+//            $classes[] = 'new';
+//            break;
+//          }
+//        }
+//      }
+//    }
 
     if ($module->origin === 'core') {
 //      dpm($module);
 //      dpm("other DPM removed");
       $profile = \Drupal::installProfile();
       if (strpos($module->subpath, 'profiles/' . $profile . '/modules/') === 0) {
-        $classes[] = 'profile';
-        $global_tabs['profile'] = TRUE;
+//        $classes[] = 'profile';
+//        $global_tabs['profile'] = TRUE;
         $classes[] = 'hidecore';
 
 //        dpm("$name is a profile module - removing");
-        unset($modules[$name]);
+//        unset($modules[$name]);
       }
       else {
 //        dpm("$name is a core module - removing");
-        unset($modules[$name]);
-        $classes[] = 'core';
+//        unset($modules[$name]);
+//        $classes[] = 'core';
         $classes[] = 'hidecore';
-        $global_tabs['core'] = TRUE;
+//        $global_tabs['core'] = TRUE;
       }
     }
-    elseif (strpos($module->subpath, 'modules/contrib/') === 0) {
-      $classes[] = 'contrib';
-      $global_tabs['contrib'] = TRUE;
-    }
-    elseif (strpos($module->subpath, 'modules/custom/') === 0) {
-      $classes[] = 'custom';
-      $global_tabs['custom'] = TRUE;
-    }
+//    elseif (strpos($module->subpath, 'modules/contrib/') === 0) {
+//      $classes[] = 'contrib';
+//      $global_tabs['contrib'] = TRUE;
+//    }
+//    elseif (strpos($module->subpath, 'modules/custom/') === 0) {
+//      $classes[] = 'custom';
+//      $global_tabs['custom'] = TRUE;
+//    }
 
     if (!empty($classes)) {
       foreach (Element::children($form['modules']) as $package) {
@@ -159,8 +135,8 @@ function hidecore_form_system_modules_alter(&$form, FormStateInterface $form_sta
   }
 
   // Structure the $global_tabs array to include the tabs label.
-  $global_tabs = array_keys(array_filter($global_tabs));
-  $global_tabs = array_combine($global_tabs, $global_tabs);
+//  $global_tabs = array_keys(array_filter($global_tabs));
+//  $global_tabs = array_combine($global_tabs, $global_tabs);
   $global_tabs = array_map(function ($value) {
     switch ($value) {
       case 'recent':
@@ -201,50 +177,7 @@ function hidecore_form_system_modules_confirm_form_alter(&$form, FormStateInterf
   $form['#submit'][] = 'hidecore_system_modules_redirect_submit';
 }
 
-/**
- * Implements hook_form_FORM_ID_alter().
- */
-function hidecore_form_system_modules_uninstall_alter(&$form, FormStateInterface $form_state, $form_id) {
-  $key = array_search('system/drupal.system.modules', $form['#attached']['library']);
-  if ($key !== FALSE) {
-    unset($form['#attached']['library'][$key]);
-  }
-  $form['#attached']['library'][] = 'hidecore/modules.uninstall';
-  unset($form['filters']['text']['#description']);
-  $form['filters']['text']['#placeholder'] = t('Filter by name');
-  if (!empty($_GET['filter'])) {
-    $form['filters']['text']['#default_value'] = $_GET['filter'];
-  }
-}
 
-/**
- * Implements hook_form_FORM_ID_alter().
- */
-function hidecore_form_user_admin_permissions_alter(&$form, FormStateInterface $form_state, $form_id) {
-  $form['filters'] = [
-    '#type' => 'container',
-    '#attributes' => [
-      'class' => ['table-filter', 'js-show'],
-    ],
-  ];
-  $form['filters']['text'] = [
-    '#type' => 'search',
-    '#title' => t('Filter modules'),
-    '#title_display' => 'invisible',
-    '#size' => 30,
-    '#placeholder' => t('Filter by name'),
-    '#attributes' => [
-      'class' => ['table-filter-text'],
-      'data-table' => '#permissions',
-      'autocomplete' => 'off',
-    ],
-    '#weight' => -1000,
-  ];
-  if (!empty($_GET['filter'])) {
-    $form['filters']['text']['#default_value'] = $_GET['filter'];
-  }
-  $form['#attached']['library'][] = 'hidecore/permissions';
-}
 
 /**
  * Implements hook_theme_registry_alter().

@@ -4,7 +4,6 @@ description: Hide the core modules from the modules list.
 package: 00 Demo
 core: 8.x
 core_version_requirement: ^8 || ^9
-configure: hidecore.settings
 
 dependencies:
   - drupal:system (>= 8.3)

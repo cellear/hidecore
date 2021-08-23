@@ -18,9 +18,6 @@ modules:
   version: VERSION
   js:
     js/hidecore.modules.js: {}
-  css:
-    theme:
-      css/hidecore.modules.css: {}
   dependencies:
     - hidecore/filter
 modules.bare:
