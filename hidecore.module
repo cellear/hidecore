@@ -28,37 +28,20 @@ function hidecore_help($route_name, RouteMatchInterface $route_match) {
  * Implements hook_form_FORM_ID_alter().
  */
 function hidecore_form_system_modules_alter(&$form, FormStateInterface $form_state, $form_id) {
-  $config = \Drupal::config('hidecore.settings');
-
-  $key = array_search('system/drupal.system.modules', $form['#attached']['library']);
   $form['#attached']['library'][] = 'hidecore/hide-the-modules';
-
   $modules = \Drupal::service('extension.list.module')->reset()->getList();
-
-
-
   foreach ($modules as $name => $module) {
     $classes = [];
-
     if ($module->origin === 'core') {
-      $profile = \Drupal::installProfile();
-      if (strpos($module->subpath, 'profiles/' . $profile . '/modules/') === 0) {
-        $classes[] = 'hidecore';
-      }
-      else {
-        $classes[] = 'hidecore';
-      }
+      $classes[] = 'hidecore';
     }
-
-
     if (!empty($classes)) {
       foreach (Element::children($form['modules']) as $package) {
         if (isset($form['modules'][$package][$name])) {
-          // Ensure if there is an array before merge.
+          // If there is no array to merge with, create one.
           if (!isset($form['modules'][$package][$name]['#attributes']['class'])) {
             $form['modules'][$package][$name]['#attributes']['class'] = [];
           }
-
           $form['modules'][$package][$name]['#attributes']['class'] = array_merge(
             $form['modules'][$package][$name]['#attributes']['class'],
             $classes
