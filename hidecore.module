@@ -2,7 +2,7 @@
 
 /**
  * @file
- * Provides a filtering mechanism to various admin pages.
+ * Hides core modules on the modules page using CSS.
  */
 
 use Drupal\Core\Render\Element;
@@ -15,11 +15,9 @@ use Drupal\Core\Routing\RouteMatchInterface;
 function hidecore_help($route_name, RouteMatchInterface $route_match) {
   switch ($route_name) {
     case 'help.page.hidecore':
-      $output = '';
-      $output .= '<p>';
+      $output = '<p>';
       $output .= t('The modules list page can be confusing to new users, because it displays numerous modules that are included with Drupal, and that makes it hard to pick out the modules that have been selected or created specifically for the user\'s own site.');
-      $output .= '</p>';
-      $output .= '<p>';
+      $output .= '</p><p>';
       $output .= t('This module addresses that by simply hiding the modules that come with Drupal, allowing the user to quickly grasp the functionality that has been added.');
       $output .= '</p>';
       return $output;
@@ -34,17 +32,10 @@ function hidecore_form_system_modules_alter(&$form, FormStateInterface $form_sta
 
   $key = array_search('system/drupal.system.modules', $form['#attached']['library']);
   $form['#attached']['library'][] = 'hidecore/hide-the-modules';
-  unset($form['filters']['text']['#description']);
-//  $form['filters']['text']['#placeholder'] = t('Filter by name');
-  if (!empty($_GET['filter'])) {
-    $form['filters']['text']['#default_value'] = $_GET['filter'];
-  }
+
   $modules = \Drupal::service('extension.list.module')->reset()->getList();
 
-  $global_tabs = [
-    'recent' => TRUE,
-    'new' => TRUE,
-  ];
+
 
   foreach ($modules as $name => $module) {
     $classes = [];
@@ -53,7 +44,6 @@ function hidecore_form_system_modules_alter(&$form, FormStateInterface $form_sta
       $profile = \Drupal::installProfile();
       if (strpos($module->subpath, 'profiles/' . $profile . '/modules/') === 0) {
         $classes[] = 'hidecore';
-
       }
       else {
         $classes[] = 'hidecore';
@@ -78,87 +68,5 @@ function hidecore_form_system_modules_alter(&$form, FormStateInterface $form_sta
       }
     }
   }
-
 }
 
-/**
- * Implements hook_form_FORM_ID_alter().
- */
-function hidecore_form_system_modules_confirm_form_alter(&$form, FormStateInterface $form_state, $form_id) {
-  $form['filters']['text'] = [
-    '#type' => 'value',
-    '#value' => isset($_GET['filter']) ? $_GET['filter'] : '',
-  ];
-  $form['#submit'][] = 'hidecore_system_modules_redirect_submit';
-}
-
-
-
-/**
- * Implements hook_theme_registry_alter().
- */
-//function hidecore_theme_registry_alter(&$theme_registry) {
-//  // We need to alter the system-modules-details template so we can add
-//  // applicable requires and required-by classes.
-//  $theme_registry['system_modules_details']['path'] = drupal_get_path('module', 'hidecore') . '/templates';
-//}
-
-/**
- * Implements hook_preprocess_HOOK().
- */
-function hidecore_preprocess_system_modules_details(&$variables) {
-  $display_path = \Drupal::config('hidecore.settings')->get('path');
-  if ($display_path) {
-    foreach ($variables['modules'] as &$module) {
-      // Get the module id from parents.
-      // Because core does not provide it in template_preprocess_system_modules_details.
-      $id = $module['name']['#parents'][1];
-      $path = drupal_get_path('module', $id);
-      if (!empty($path)) {
-        $module['path'] = $path;
-      }
-    }
-  }
-}
-
-/**
- * Form submit callback to track recently enabled modules.
- */
-function hidecore_system_modules_recent_enabled_submit($form, FormStateInterface $form_state) {
-  $state = \Drupal::state();
-  $recent = $state->get('hidecore.recent') ?: [];
-
-  // Drupal 8.3.0 simplified the module form structure which requires checking
-  // the version of Drupal and building the $modules array accordingly.
-  // @see https://www.drupal.org/node/2851653
-  $modules = [];
-  if (version_compare(\Drupal::VERSION, '8.3.0', '<')) {
-    foreach ($form_state->getValue('modules') as $package) {
-      $modules += $package;
-    }
-  }
-  else {
-    $modules = $form_state->getValue('modules');
-  }
-
-  foreach (Element::children($form['modules']) as $package) {
-    foreach ($modules as $module => $details) {
-      if (isset($form['modules'][$package][$module]) && $form['modules'][$package][$module]['enable']['#default_value'] != $details['enable']) {
-        $recent[$module] = \Drupal::time()->getRequestTime();
-      }
-    }
-  }
-
-  $state->set('hidecore.recent', $recent);
-}
-
-/**
- * Form submit callback for remembering the filter value.
- */
-function hidecore_system_modules_redirect_submit($form, FormStateInterface $form_state) {
-  if ($text = $form_state->getValue('text')) {
-    /** @var \Drupal\Core\Url $redirect */
-    $route_name = ($redirect = $form_state->getRedirect()) ? $redirect->getRouteName() : 'system.modules_list';
-    $form_state->setRedirect($route_name, ['filter' => $text]);
-  }
-}
