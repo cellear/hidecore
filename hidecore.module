@@ -95,6 +95,7 @@ function hidecore_form_system_modules_alter(&$form, FormStateInterface $form_sta
     'recent' => TRUE,
     'new' => TRUE,
   ];
+
   foreach ($modules as $name => $module) {
     $classes = [];
     if ($name == 'hidecore') {
@@ -111,13 +112,22 @@ function hidecore_form_system_modules_alter(&$form, FormStateInterface $form_sta
     }
 
     if ($module->origin === 'core') {
+//      dpm($module);
+//      dpm("other DPM removed");
       $profile = \Drupal::installProfile();
       if (strpos($module->subpath, 'profiles/' . $profile . '/modules/') === 0) {
         $classes[] = 'profile';
         $global_tabs['profile'] = TRUE;
+        $classes[] = 'hidecore';
+
+//        dpm("$name is a profile module - removing");
+        unset($modules[$name]);
       }
       else {
+//        dpm("$name is a core module - removing");
+        unset($modules[$name]);
         $classes[] = 'core';
+        $classes[] = 'hidecore';
         $global_tabs['core'] = TRUE;
       }
     }

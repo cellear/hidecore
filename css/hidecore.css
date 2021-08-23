@@ -1,3 +1,8 @@
+
+.hidecore {
+  display: none;
+}
+
 .winnow-input {
   position: relative;
   display: inline-block;
